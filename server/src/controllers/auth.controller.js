@@ -10,10 +10,6 @@ const registerUserController = async (req, res) => {
     try{
         const { name, email, password, phone, role } = req.body;
 
-        if(!name || !email || !password || !phone || !role){
-            return res.status(400).json({message: "Name, email, password, and phone are all required"});
-        }
-
         const existingUser = await UserModel.findOne({ 
             $or: [
                 {email},
@@ -60,11 +56,6 @@ const registerUserController = async (req, res) => {
 const loginUserController = async (req, res) => {
     try{
         const {identifier, password, role} = req.body;
-
-        if(!identifier || !password || !role){
-            return res.status(400).json({message: "Email or Phone, Password, and Role are required."});
-        }
-        //console.log("Login request body:", req.body);
         const cleanIdentifier = identifier.trim();
         const normalizedRole = role.trim().toLowerCase();
 

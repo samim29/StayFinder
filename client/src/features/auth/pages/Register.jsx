@@ -1,15 +1,34 @@
 import React, {useState}from 'react'
 import AuthSide from '../components/AuthSide'
 import '../auth.scss'
+import {useNavigate,Link} from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth';
+
 const Register = () => {
+  const { handleRegister, loading } = useAuth();
+  const navigate = useNavigate();
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('student')
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Registering with:', { name, email, phone, password, role });
+    const isRegistered = await handleRegister({ name, email, phone, password, role });
+    if (isRegistered) {
+      // Handle successful registration (e.g., redirect to login)
+      navigate('/login');
+
+    } else {
+      // Handle registration failure (e.g., show error message)
+      console.error('Registration failed');
+    }
+  }
+
+  if(loading) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -53,7 +72,7 @@ const Register = () => {
             </div>
             <div className="field">
               <label htmlFor="phone">PHONE</label>
-              <input type="text" name="phone" id="phone" placeholder='+91 9xxxxxxxxx' value={phone} onChange={(e) => setPhone(e.target.value)}   />
+              <input type="text" name="phone" id="phone" placeholder='9xxxxxxxxx' value={phone} onChange={(e) => setPhone(e.target.value)}   />
             </div>
             <div className="field">
               <label htmlFor="password">PASSWORD</label>
@@ -63,7 +82,7 @@ const Register = () => {
             <button type='submit' className='submit-btn'>Create account</button>
           </form>
           <p className="switch-line">
-            Already have an account? <a href="/login">Log in</a>
+            Already have an account? <Link to="/login">Log in</Link>
           </p>
         </div>
       </section>

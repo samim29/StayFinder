@@ -1,7 +1,12 @@
 import React, {useEffect, useState} from 'react'
 import AuthSide from '../components/AuthSide'
 import '../auth.scss'
+import { useAuth } from '../hooks/useAuth';
+import {useNavigate,Link} from 'react-router-dom'
 const Login = () => {
+  const { handleLogin, loading } = useAuth();
+  const navigate = useNavigate();
+
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('student')
@@ -10,7 +15,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     // Handle login logic here
-    console.log('Logging in with:', { identifier, password, role })
+    const isLoggedIn = await handleLogin({ identifier, password, role });
+    if (isLoggedIn) {
+      // Handle successful login (e.g., redirect to dashboard)
+      navigate('/dashboard');
+    } else {
+      // Handle login failure (e.g., show error message)
+      console.error('Login failed');
+    }
+  }
+
+  if(loading) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -46,7 +62,7 @@ const Login = () => {
           <form className='auth-form' onSubmit={handleSubmit}>
             <div className="field">
               <label htmlFor="identifier">EMAIL OR PHONE NUMBER</label>
-              <input type="text" name="identifier" id="identifier" placeholder='rohan@email.com or +91 9xxxxxxxxx' value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
+              <input type="text" name="identifier" id="identifier" placeholder='rohan@email.com or 9xxxxxxxxx' value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
             </div>
 
             <div className="field">
@@ -57,7 +73,7 @@ const Login = () => {
             <button type='submit' className='submit-btn'>Log in</button>
           </form>
           <p className="switch-line">
-            Don't have an account? <a href="/register">Sign up</a>
+            Don't have an account? <Link to="/register">Sign up</Link>
           </p>
         </div>
       </section>

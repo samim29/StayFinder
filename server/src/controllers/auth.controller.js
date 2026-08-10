@@ -36,12 +36,14 @@ const registerUserController = async (req, res) => {
 
         res.status(201).json({
             "message" : "user created successfully",
+            user: {
             _id: user._id,
             name: user._name,
             email: user.email,
             phone: user.phone,
             role: user.role,
-        })
+        }
+        });
 
     }catch(error){
         console.log(error);
@@ -57,13 +59,14 @@ const registerUserController = async (req, res) => {
 
 const loginUserController = async (req, res) => {
     try{
-        const {identifier, password} = req.body;
+        const {identifier, password, role} = req.body;
 
-        if(!identifier || !password) {
-            return res.status(400).json({message: "Email or Phone and Password are required."});
+        if(!identifier || !password || !role){
+            return res.status(400).json({message: "Email or Phone, Password, and Role are required."});
         }
-
+        //console.log("Login request body:", req.body);
         const cleanIdentifier = identifier.trim();
+        const normalizedRole = role.trim().toLowerCase();
 
         const user = await UserModel.findOne({
             $or: [
@@ -75,7 +78,9 @@ const loginUserController = async (req, res) => {
         if(!user) {
             return res.status(401).json({message: "Invalid credentials."});
         }
-
+        if(user.role !== normalizedRole) {
+            return res.status(403).json({message: "You are not authorized to log in as this role."});
+        }
         const isMatch = await user.comparePassword(password);
 
         if(!isMatch){
@@ -85,18 +90,19 @@ const loginUserController = async (req, res) => {
         generateToken(res,user);
         res.status(200).json({
             message: 'Login successful',
-            _id: user._id,
-            name: user._name,
-            email: user.email,
-            phone: user.phone,
-            role: user.role,
+            user: {
+                _id: user._id,
+                name: user._name,
+                email: user.email,
+                phone: user.phone,
+                role: user.role
+            }
         });
-
 
     }catch(error){
         console.log(error);
         res.status(500).json({"message" : "internal server error"});
-    }
+    }  
 }
 /**
  * @description logout user controller

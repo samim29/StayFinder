@@ -1,127 +1,201 @@
+
 import React, { useState } from "react";
 import AuthSide from "../components/AuthSide";
 import "../auth.scss";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema } from "../validations/auth.validation";
+import { getErrorMessage } from "../utils/errorHandler";
 const Register = () => {
   const { handleRegister, loading } = useAuth();
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
+  const [serverError, setServerError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const isRegistered = await handleRegister({
-      name,
-      email,
-      phone,
-      password,
-      role,
-    });
-    if (isRegistered) {
-      // Handle successful registration (e.g., redirect to login)
-      navigate("/login");
-    } else {
-      // Handle registration failure (e.g., show error message)
-      console.error("Registration failed");
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      role: "student",
+    },
+  });
+
+  // Watch role so the UI updates when the role changes
+  const role = watch("role");
+
+  const onSubmit = async (data) => {
+    try {
+      setServerError("");
+
+      const isRegistered = await handleRegister(data);
+
+      if (isRegistered) {
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      setServerError(
+        getErrorMessage(error, "Registration failed. Please try again.")
+      );
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <main className="auth-page">
       <AuthSide />
+
       <section className="auth-panel">
         <div className="auth-card">
           <h2>Create your account</h2>
-          <p>Tell us who you are so we can get you to the right dashboard.</p>
-          <div className="role-toggle" role="tablist" aria-label="Account type">
+
+          <p>
+            Tell us who you are so we can get you to the right dashboard.
+          </p>
+
+          {/* Role Selection */}
+          <div
+            className="role-toggle"
+            role="tablist"
+            aria-label="Account type"
+          >
             <button
               type="button"
               className={role === "student" ? "active" : ""}
               aria-pressed={role === "student"}
-              onClick={() => {
-                setRole("student");
-              }}
+              onClick={() => setValue("role", "student")}
             >
               I'm a Student
             </button>
+
             <button
               type="button"
               className={role === "owner" ? "active" : ""}
               aria-pressed={role === "owner"}
-              onClick={() => {
-                setRole("owner");
-              }}
+              onClick={() => setValue("role", "owner")}
             >
               I'm a PG Owner
             </button>
           </div>
+
           <p className="role-status">
-            Selected role: {role === "student" ? "Student" : "PG Owner"}
+            Selected role:{" "}
+            {role === "student" ? "Student" : "PG Owner"}
           </p>
-          <form className="auth-form" onSubmit={handleSubmit}>
+
+          {/* Server Error */}
+          {serverError && (
+            <div className="form-error">
+              {serverError}
+            </div>
+          )}
+
+          <form
+            className="auth-form"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+          >
+            {/* Name */}
             <div className="field">
               <label htmlFor="name">FULL NAME</label>
+
               <input
                 type="text"
-                name="name"
                 id="name"
                 placeholder="Rohan Mehta"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                {...register("name")}
               />
+
+              {errors.name && (
+                <div className="field-error">
+                  {errors.name.message}
+                </div>
+              )}
             </div>
+
+            {/* Email */}
             <div className="field">
               <label htmlFor="email">EMAIL</label>
+
               <input
                 type="email"
-                name="email"
                 id="email"
                 placeholder="rohan@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email")}
               />
+
+              {errors.email && (
+                <div className="field-error">
+                  {errors.email.message}
+                </div>
+              )}
             </div>
+
+            {/* Phone */}
             <div className="field">
               <label htmlFor="phone">PHONE</label>
+
               <input
                 type="text"
-                name="phone"
                 id="phone"
                 placeholder="9xxxxxxxxx"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                {...register("phone")}
               />
+
+              {errors.phone && (
+                <div className="field-error">
+                  {errors.phone.message}
+                </div>
+              )}
             </div>
+
+            {/* Password */}
             <div className="field">
               <label htmlFor="password">PASSWORD</label>
+
               <input
                 type="password"
-                name="password"
                 id="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password")}
               />
-              <div className="field-error">
-                Password must be at least 8 characters.
-              </div>
+
+              {errors.password && (
+                <div className="field-error">
+                  {errors.password.message}
+                </div>
+              )}
             </div>
-            <button type="submit" className="submit-btn">
-              Create account
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Creating account..." : "Create account"}
             </button>
           </form>
+
           <p className="switch-line">
-            Already have an account? <Link to="/login">Log in</Link>
+            Already have an account?{" "}
+            <Link to="/login">Log in</Link>
           </p>
         </div>
       </section>
@@ -130,3 +204,4 @@ const Register = () => {
 };
 
 export default Register;
+

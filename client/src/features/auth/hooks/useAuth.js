@@ -42,7 +42,7 @@ export const useAuth = () => {
       return true;
     } catch (error) {
       console.error("Registration error:", error);
-      return false;
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export const useAuth = () => {
       return true;
     } catch (error) {
       console.error("Login error:", error);
-      return false;
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -85,6 +85,7 @@ export const useAuth = () => {
       setUser(null);
     } catch (error) {
       console.error("Logout error:", error);
+      throw error;
     } finally {
       setLoading(false);
     }

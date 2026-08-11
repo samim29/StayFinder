@@ -1,106 +1,171 @@
+
 import React, { useEffect, useState } from "react";
 import AuthSide from "../components/AuthSide";
 import "../auth.scss";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "../validations/auth.validation";
+import { getErrorMessage } from "../utils/errorHandler";
+
 const Login = () => {
   const { handleLogin, loading, user } = useAuth();
   const navigate = useNavigate();
 
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
+  const [serverError, setServerError] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+
+    defaultValues: {
+      identifier: "",
+      password: "",
+      role: "student",
+    },
+  });
+
+  const role = watch("role");
 
   useEffect(() => {
-
     if (!loading && user) {
       navigate("/dashboard");
     }
-
   }, [user, loading, navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Handle login logic here
-    const isLoggedIn = await handleLogin({ identifier, password, role });
-    if (isLoggedIn) {
-      // Handle successful login (e.g., redirect to dashboard)
-      navigate("/dashboard");
-    } else {
-      // Handle login failure (e.g., show error message)
-      console.error("Login failed");
+  const onSubmit = async (data) => {
+    try {
+      setServerError("");
+
+      const isLoggedIn = await handleLogin(data);
+
+      if (isLoggedIn) {
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+
+      setServerError(
+        getErrorMessage(error, "Login failed. Please check your credentials.")
+      );
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <main className="auth-page">
       <AuthSide />
+
       <section className="auth-panel">
         <div className="auth-card">
           <h2>Login to your account</h2>
-          <p>Enter your email or phone number to access your dashboard.</p>
-          <div className="role-toggle" role="tablist" aria-label="Account type">
+
+          <p>
+            Enter your email or phone number to access your dashboard.
+          </p>
+
+          {/* Role Selection */}
+          <div
+            className="role-toggle"
+            role="tablist"
+            aria-label="Account type"
+          >
             <button
               type="button"
               className={role === "student" ? "active" : ""}
               aria-pressed={role === "student"}
-              onClick={() => {
-                setRole("student");
-              }}
+              onClick={() => setValue("role", "student")}
             >
               I'm a Student
             </button>
+
             <button
               type="button"
               className={role === "owner" ? "active" : ""}
               aria-pressed={role === "owner"}
-              onClick={() => {
-                setRole("owner");
-              }}
+              onClick={() => setValue("role", "owner")}
             >
               I'm a PG Owner
             </button>
           </div>
+
           <p className="role-status">
-            Selected role: {role === "student" ? "Student" : "PG Owner"}
+            Selected role:{" "}
+            {role === "student" ? "Student" : "PG Owner"}
           </p>
-          <form className="auth-form" onSubmit={handleSubmit}>
+
+          {/* Server Error */}
+          {serverError && (
+            <div className="form-error">
+              {serverError}
+            </div>
+          )}
+
+          <form
+            className="auth-form"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+          >
+            {/* Identifier */}
             <div className="field">
-              <label htmlFor="identifier">EMAIL OR PHONE NUMBER</label>
+              <label htmlFor="identifier">
+                EMAIL OR PHONE NUMBER
+              </label>
+
               <input
                 type="text"
-                name="identifier"
                 id="identifier"
                 placeholder="rohan@email.com or 9xxxxxxxxx"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                {...register("identifier")}
               />
+
+              {errors.identifier && (
+                <p className="field-error">
+                  {errors.identifier.message}
+                </p>
+              )}
             </div>
 
+            {/* Password */}
             <div className="field">
               <label htmlFor="password">PASSWORD</label>
+
               <input
                 type="password"
-                name="password"
                 id="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password")}
               />
-              <div className="field-error">
-                Password must be at least 8 characters.
-              </div>
+
+              {errors.password && (
+                <p className="field-error">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
-            <button type="submit" className="submit-btn">
-              Log in
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Logging in..." : "Log in"}
             </button>
           </form>
+
           <p className="switch-line">
-            Don't have an account? <Link to="/register">Sign up</Link>
+            Don't have an account?{" "}
+            <Link to="/register">Sign up</Link>
           </p>
         </div>
       </section>
@@ -109,3 +174,4 @@ const Login = () => {
 };
 
 export default Login;
+

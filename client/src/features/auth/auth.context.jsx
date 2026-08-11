@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
                     setUser(data.user);
                 }
             } catch (error) {
-                console.error("Failed to get current user:", error);
+                console.error("Failed to get current user:");
             } finally {
                 setLoading(false);
             }

@@ -1,7 +1,11 @@
 const express = require('express');
+
 const authRouter = require('./routes/auth.route');
+const pgRouter = require('./routes/pg.route');
+
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+
 const app = express();
 
 app.use(express.json());
@@ -11,6 +15,22 @@ app.use(cors({
     credentials: true
 }));
 
+/**
+ * 
+ * @description health check route
+ */
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
+/**
+ * @description authentication routes
+ */
 app.use('/api/auth', authRouter);
+
+/**
+ * @description PG routes
+ */
+
+app.use('/api/pg', pgRouter);
+
 
 module.exports = app;

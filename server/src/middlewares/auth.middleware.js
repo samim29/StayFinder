@@ -43,4 +43,21 @@ const authMiddleware = async (req, res, next) => {
   } 
 };
 
-module.exports = authMiddleware;
+/**
+ * @description Middleware to authorize user based on role.
+ * It checks if the authenticated user has the required role to access the route.
+ * @param {string} role - The required role for the route.
+ */
+const authorizeRoleMiddleware = (role) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized access' });
+    }
+    if (req.user.role !== role) {
+      return res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
+    }
+    next();
+  };
+};
+
+module.exports = {authMiddleware, authorizeRoleMiddleware};

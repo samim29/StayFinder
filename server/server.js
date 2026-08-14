@@ -1,6 +1,8 @@
-require('dotenv').config();
+if(process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 const app = require('./src/app');
-const connectDb = require('./src/config/database');
+const connectDb = require('./src/config/database.config');
 const PORT = process.env.PORT || 3000;
 
 connectDb();

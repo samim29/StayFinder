@@ -120,7 +120,7 @@ const getAllPgsController = async (req, res) => {
                 });
             }
 
-            const result = await PGModel.aggregate([
+            const result = await PgModel.aggregate([
                 {
                     $geoNear: {
                         near: {
@@ -168,12 +168,12 @@ const getAllPgsController = async (req, res) => {
         // -------------------------
         else {
             [pgs, total] = await Promise.all([
-                PGModel.find(filter)
+                PgModel.find(filter)
                     .sort("-createdAt")
                     .skip(skip)
                     .limit(limitNumber),
 
-                PGModel.countDocuments(filter),
+                PgModel.countDocuments(filter),
             ]);
         }
 
@@ -223,7 +223,7 @@ const getMyPgsController = async (req, res) => {
  */
 const getPGByIdController = async (req, res) => {
    try {
-    const pg = await PGModel.findById(req.params.id).populate('owner', 'name phone email');
+    const pg = await PgModel.findById(req.params.id).populate('owner', 'name phone email');
     if (!pg) return res.status(404).json({ message: 'PG listing not found' });
     res.json(pg);
    } catch (error) {
@@ -261,27 +261,6 @@ const createPgController = async (req, res) => {
 
         const owner = req.user._id;
 
-        // -------------------------
-        // Required field validation
-        // -------------------------
-        if (
-            !title ||
-            !description ||
-            !address ||
-            lat === undefined ||
-            lng === undefined ||
-            rent === undefined ||
-            totalBeds === undefined ||
-            !contactPhone
-        ) {
-            return res.status(400).json({
-                message: "Missing required fields",
-            });
-        }
-
-        // -------------------------
-        // Convert numeric values
-        // -------------------------
         const latitude = Number(lat);
         const longitude = Number(lng);
         const rentAmount = Number(rent);
@@ -292,51 +271,6 @@ const createPgController = async (req, res) => {
                 ? Number(availableBeds)
                 : totalBedsNumber;
 
-        // -------------------------
-        // Validate coordinates
-        // -------------------------
-        if (
-            !Number.isFinite(latitude) ||
-            latitude < -90 ||
-            latitude > 90 ||
-            !Number.isFinite(longitude) ||
-            longitude < -180 ||
-            longitude > 180
-        ) {
-            return res.status(400).json({
-                message: "Invalid latitude or longitude",
-            });
-        }
-
-        // -------------------------
-        // Validate rent and beds
-        // -------------------------
-        if (!Number.isFinite(rentAmount) || rentAmount < 0) {
-            return res.status(400).json({
-                message: "Invalid rent",
-            });
-        }
-
-        if (!Number.isInteger(totalBedsNumber) || totalBedsNumber < 1) {
-            return res.status(400).json({
-                message: "Total beds must be at least 1",
-            });
-        }
-
-        if (
-            !Number.isInteger(availableBedsNumber) ||
-            availableBedsNumber < 0 ||
-            availableBedsNumber > totalBedsNumber
-        ) {
-            return res.status(400).json({
-                message:
-                    "Available beds cannot exceed total beds or be less than 0",
-            });
-        }
-
-        // -------------------------
-        // Create PG
-        // -------------------------
         const newPg = await PgModel.create({
             owner,
             title,
@@ -379,6 +313,7 @@ const createPgController = async (req, res) => {
 };
 
 
+
 /**
  * @description Update an existing PG listing
  * @route PUT /api/pg/:pgId
@@ -389,6 +324,7 @@ const updatePgController = async (req, res) => {
     const userId = req.user._id;
 
     try {
+        // Check whether the PG exists and belongs to the logged-in owner
         const pg = await checkPgOwnedByOwner(pgId, userId);
 
         // -------------------------
@@ -431,19 +367,6 @@ const updatePgController = async (req, res) => {
                     ? Number(req.body.lng)
                     : pg.location.coordinates[0];
 
-            if (
-                !Number.isFinite(latitude) ||
-                latitude < -90 ||
-                latitude > 90 ||
-                !Number.isFinite(longitude) ||
-                longitude < -180 ||
-                longitude > 180
-            ) {
-                return res.status(400).json({
-                    message: "Invalid latitude or longitude",
-                });
-            }
-
             pg.location = {
                 type: "Point",
                 coordinates: [longitude, latitude],
@@ -471,15 +394,11 @@ const updatePgController = async (req, res) => {
         }
 
         // -------------------------
-        // Validate beds after updates
+        // Validate beds relationship
         // -------------------------
-        if (
-            pg.availableBeds < 0 ||
-            pg.availableBeds > pg.totalBeds
-        ) {
+        if (pg.availableBeds > pg.totalBeds) {
             return res.status(400).json({
-                message:
-                    "Available beds cannot exceed total beds or be less than 0",
+                message: "Available beds cannot exceed total beds",
             });
         }
 
@@ -531,6 +450,8 @@ const deletePgController = async (req, res) => {
 
 module.exports = {
     getAllPgsController,
+    getMyPgsController,
+    getPGByIdController,
     createPgController,
     updatePgController,
     deletePgController,

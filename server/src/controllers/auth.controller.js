@@ -55,6 +55,7 @@ const registerUserController = async (req, res) => {
 
 const loginUserController = async (req, res) => {
     try{
+        
         const {identifier, password, role} = req.body;
         const cleanIdentifier = identifier.trim();
         const normalizedRole = role.trim().toLowerCase();

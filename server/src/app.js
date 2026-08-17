@@ -2,6 +2,7 @@ const express = require('express');
 
 const authRouter = require('./routes/auth.route');
 const pgRouter = require('./routes/pg.route');
+const uploadRouter = require('./routes/upload.route');
 
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
@@ -31,6 +32,7 @@ app.use('/api/auth', authRouter);
  */
 
 app.use('/api/pg', pgRouter);
+app.use('/api/uploads', uploadRouter);
 
 
 module.exports = app;

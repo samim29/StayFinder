@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.get('/', pgController.getAllPgsController);
 router.get('/mine', authMiddleware,authorizeRoleMiddleware('owner'), pgController.getMyPgsController);
+router.get('/:pgId/manage', authMiddleware, authorizeRoleMiddleware('owner'), pgController.getPgForOwnerController);
 router.get('/:id', authMiddleware, pgController.getPGByIdController);
 
 router.post('/', authMiddleware, authorizeRoleMiddleware('owner'), validateCreatePG, pgController.createPgController);

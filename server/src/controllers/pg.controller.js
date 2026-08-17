@@ -1,5 +1,21 @@
 const PgModel = require("../models/pg.model.js");
 const checkPgOwnedByOwner = require("../utils/checkPgOwnedByOwner.utils.js");
+const cloudinary = require("../config/cloudinary.config.js");
+
+const isOwnerCloudinaryImage = (image, ownerId) =>
+    image &&
+    typeof image.url === "string" &&
+    typeof image.publicId === "string" &&
+    image.url.startsWith("https://res.cloudinary.com/") &&
+    image.publicId.startsWith(`stayfinder/pgs/${ownerId}/`);
+
+const deleteCloudinaryImages = async (images) => {
+    await Promise.all(
+        images.map(({ publicId }) =>
+            cloudinary.uploader.destroy(publicId, { resource_type: "image" }),
+        ),
+    );
+};
 
 /**
  * @description Get all PG listings with optional filters and pagination
@@ -216,6 +232,22 @@ const getMyPgsController = async (req, res) => {
     }
 };
 
+
+/**
+ * @description Get a PG listing for its owner to manage.
+ * @route GET /api/pg/:pgId/manage
+ * @access Private - PG owner only
+ */
+const getPgForOwnerController = async (req, res) => {
+    try {
+        const pg = await checkPgOwnedByOwner(req.params.pgId, req.user._id);
+        res.status(200).json(pg);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            message: error.message || "Internal server error",
+        });
+    }
+};
 /**
  * @description Get a PG listing by its ID
  * @route GET /api/pg/:id
@@ -261,6 +293,10 @@ const createPgController = async (req, res) => {
 
         const owner = req.user._id;
 
+        if (!Array.isArray(images) || !images.every((image) => isOwnerCloudinaryImage(image, owner))) {
+            return res.status(400).json({ message: "Images must be uploaded through StayFinder" });
+        }
+
         const latitude = Number(lat);
         const longitude = Number(lng);
         const rentAmount = Number(rent);
@@ -296,7 +332,7 @@ const createPgController = async (req, res) => {
                 email: contactEmail,
             },
 
-            images: images || [],
+            images,
         });
 
         res.status(201).json({
@@ -326,6 +362,16 @@ const updatePgController = async (req, res) => {
     try {
         // Check whether the PG exists and belongs to the logged-in owner
         const pg = await checkPgOwnedByOwner(pgId, userId);
+        const previousImages = pg.images.map((image) => ({
+            url: image.url,
+            publicId: image.publicId,
+        }));
+
+        if (req.body.images !== undefined) {
+            if (!Array.isArray(req.body.images) || !req.body.images.every((image) => isOwnerCloudinaryImage(image, userId))) {
+                return res.status(400).json({ message: "Images must be uploaded through StayFinder" });
+            }
+        }
 
         // -------------------------
         // Update simple fields
@@ -407,6 +453,19 @@ const updatePgController = async (req, res) => {
         // -------------------------
         const updatedPg = await pg.save();
 
+        if (req.body.images !== undefined) {
+            const retainedPublicIds = new Set(updatedPg.images.map((image) => image.publicId));
+            const removedImages = previousImages.filter(
+                (image) => !retainedPublicIds.has(image.publicId),
+            );
+
+            try {
+                await deleteCloudinaryImages(removedImages);
+            } catch (cloudinaryError) {
+                console.error("Failed to remove old Cloudinary images:", cloudinaryError);
+            }
+        }
+
         res.status(200).json({
             message: "PG updated successfully",
             pg: updatedPg,
@@ -433,6 +492,12 @@ const deletePgController = async (req, res) => {
     try {
         const pg = await checkPgOwnedByOwner(pgId, userId);
 
+        try {
+            await deleteCloudinaryImages(pg.images);
+        } catch (cloudinaryError) {
+            console.error("Failed to remove Cloudinary images:", cloudinaryError);
+        }
+
         await pg.deleteOne();
 
         res.status(200).json({
@@ -451,6 +516,7 @@ const deletePgController = async (req, res) => {
 module.exports = {
     getAllPgsController,
     getMyPgsController,
+    getPgForOwnerController,
     getPGByIdController,
     createPgController,
     updatePgController,

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { PgContext } from "../pg.context.jsx";
-import { createPg, deletePg, getMyPgs, getPg, updatePg, uploadPgImage } from "../services/pg.api.js";
+import { createPg, deletePg, getMyPgs, getPg, getPgs, getPublicPg, updatePg, uploadPgImage } from "../services/pg.api.js";
 
 /**
  * @description Provides PG listing state and owner listing actions.
@@ -18,6 +18,26 @@ export const usePg = () => {
     setLoading(true);
     try {
       return await getPg(pgId);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetPublicPg = async (pgId) => {
+    setLoading(true);
+    try {
+      return await getPublicPg(pgId);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearchPgs = async (params) => {
+    setLoading(true);
+    try {
+      const data = await getPgs(params);
+      setPgs(data.pgs);
+      return data;
     } finally {
       setLoading(false);
     }
@@ -66,5 +86,5 @@ export const usePg = () => {
     }
   };
 
-  return { pgs, loading, handleGetPg, handleGetMyPgs, handleCreatePg, handleUpdatePg, handleDeletePg, uploadPgImage };
+  return { pgs, loading, handleGetPg, handleGetPublicPg, handleSearchPgs, handleGetMyPgs, handleCreatePg, handleUpdatePg, handleDeletePg, uploadPgImage };
 };

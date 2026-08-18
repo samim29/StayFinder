@@ -24,6 +24,12 @@ body {
   margin: 0;
   padding: 0;
 }
+.pg-map-wrap iframe { position: relative; z-index: 0; }
+.map-markers { z-index: 2; }
+.user-map-marker { position: absolute; transform: translate(-50%, -50%); display: grid; place-items: center; width: 30px; height: 30px; border: 3px solid white; border-radius: 50%; background: #2878d8; color: white; box-shadow: 0 0 0 5px #2878d844, 0 2px 7px #1b2a4a66; font: 700 8px "IBM Plex Mono", monospace; }
+.map-legend { margin-top: 20px; color: var(--ink-soft); font-size: 11px; line-height: 2; }
+.map-legend span { display: inline-block; width: 9px; height: 9px; margin-right: 5px; border-radius: 50%; }
+.legend-user { background: #2878d8; }.legend-pg { background: var(--amber); }
 body {
   background: var(--paper);
   color: var(--ink);

@@ -14,6 +14,16 @@ export async function getPg(pgId) {
   return response.data;
 }
 
+export async function getPublicPg(pgId) {
+  const response = await api.get(`/api/pg/${pgId}`);
+  return response.data;
+}
+
+export async function getPgs(params = {}) {
+  const response = await api.get("/api/pg", { params });
+  return response.data;
+}
+
 /**
  * Fetch all pgs associated with the authenticated user
  * @returns {Promise} - A promise resolving to an array of pgs

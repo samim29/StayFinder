@@ -17,6 +17,8 @@ const deleteCloudinaryImages = async (images) => {
     );
 };
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 /**
  * @description Get all PG listings with optional filters and pagination
  * @route GET /api/pg/
@@ -34,11 +36,21 @@ const getAllPgsController = async (req, res) => {
             roomTypes,
             genderPreference,
             availableBeds,
+            q,
             page = 1,
             limit = 10,
         } = req.query;
 
         const filter = {};
+
+        if (q && String(q).trim()) {
+            const search = new RegExp(escapeRegex(String(q).trim()), "i");
+            filter.$or = [
+                { title: search },
+                { description: search },
+                { address: search },
+            ];
+        }
 
         // -------------------------
         // Rent filter
@@ -47,11 +59,23 @@ const getAllPgsController = async (req, res) => {
             filter.rent = {};
 
             if (minRent !== undefined) {
-                filter.rent.$gte = Number(minRent);
+                const minimumRent = Number(minRent);
+                if (!Number.isFinite(minimumRent) || minimumRent < 0) {
+                    return res.status(400).json({ message: "Invalid minimum rent" });
+                }
+                filter.rent.$gte = minimumRent;
             }
 
             if (maxRent !== undefined) {
-                filter.rent.$lte = Number(maxRent);
+                const maximumRent = Number(maxRent);
+                if (!Number.isFinite(maximumRent) || maximumRent < 0) {
+                    return res.status(400).json({ message: "Invalid maximum rent" });
+                }
+                filter.rent.$lte = maximumRent;
+            }
+
+            if (filter.rent.$gte !== undefined && filter.rent.$lte !== undefined && filter.rent.$gte > filter.rent.$lte) {
+                return res.status(400).json({ message: "Minimum rent cannot exceed maximum rent" });
             }
         }
 
@@ -92,8 +116,12 @@ const getAllPgsController = async (req, res) => {
         // Available beds filter
         // -------------------------
         if (availableBeds !== undefined) {
+            const minimumBeds = Number(availableBeds);
+            if (!Number.isInteger(minimumBeds) || minimumBeds < 0) {
+                return res.status(400).json({ message: "Invalid available beds value" });
+            }
             filter.availableBeds = {
-                $gte: Number(availableBeds),
+                $gte: minimumBeds,
             };
         }
 
@@ -251,7 +279,7 @@ const getPgForOwnerController = async (req, res) => {
 /**
  * @description Get a PG listing by its ID
  * @route GET /api/pg/:id
- * @access Private - Authenticated users only
+ * @access Public
  */
 const getPGByIdController = async (req, res) => {
    try {

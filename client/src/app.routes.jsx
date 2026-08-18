@@ -1,13 +1,16 @@
-import { Navigate, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Register from "./features/auth/pages/Register";
 import Login from "./features/auth/pages/login";
 import PgForm from "./features/pg/pages/PgForm";
-import OwnerDashboard from "./features/pg/pages/OwnerDashboard";
 import OwnerRoute from "./features/auth/components/OwnerRoute";
+import Home from "./features/pg/pages/Home";
+import SearchResults from "./features/pg/pages/SearchResults";
+import PgDetails from "./features/pg/pages/PgDetails";
+import DashboardEntry from "./features/pg/pages/DashboardEntry";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/login" />,
+    element: <Home />,
   },
   {
     path: "/register",
@@ -18,9 +21,20 @@ export const router = createBrowserRouter([
     element: <Login />,
   },
   {
+    path: "/browse",
+    element: <SearchResults />,
+  },
+  {
+    path: "/pg/:pgId",
+    element: <PgDetails />,
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardEntry />,
+  },
+  {
     element: <OwnerRoute />,
     children: [
-      { path: "/dashboard", element: <OwnerDashboard /> },
       { path: "/listings/new", element: <PgForm /> },
       { path: "/listings/:pgId/edit", element: <PgForm /> },
     ],

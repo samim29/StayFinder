@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/', pgController.getAllPgsController);
 router.get('/mine', authMiddleware,authorizeRoleMiddleware('owner'), pgController.getMyPgsController);
 router.get('/:pgId/manage', authMiddleware, authorizeRoleMiddleware('owner'), pgController.getPgForOwnerController);
-router.get('/:id', authMiddleware, pgController.getPGByIdController);
+router.get('/:id', pgController.getPGByIdController);
 
 router.post('/', authMiddleware, authorizeRoleMiddleware('owner'), validateCreatePG, pgController.createPgController);
 router.put('/:pgId', authMiddleware, authorizeRoleMiddleware('owner'), validateUpdatePG, pgController.updatePgController);

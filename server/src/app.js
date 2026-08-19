@@ -17,7 +17,7 @@ const app = express();
 
 const allowedOrigins = (process.env.CLIENT_URLS || "http://localhost:5173")
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) => origin.trim().replace(/\/$/, ""))
   .filter(Boolean);
 
 app.use(express.json({ limit: "1mb" }));

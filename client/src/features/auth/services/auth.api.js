@@ -1,19 +1,20 @@
-import axios from "axios";
-
-const api = axios.create({
-    baseURL: "http://localhost:3000",
-    withCredentials: true,
-})
+import api from "../../../services/api.js";
 
 /**
  * @description register user service
  * @param {Object} userData - The user data for registration.
  * @return {Promise<Object>} - The response data from the server.
  */
-export async function registerUser({name, email,phone,password,role}) {
-    const response = await api.post("/api/auth/register",{name, email, phone, password, role})
+export async function registerUser({ name, email, phone, password, role }) {
+  const response = await api.post("/api/auth/register", {
+    name,
+    email,
+    phone,
+    password,
+    role,
+  });
 
-    return response.data;
+  return response.data;
 }
 
 /**
@@ -21,10 +22,14 @@ export async function registerUser({name, email,phone,password,role}) {
  * @param {Object} loginData - The login data containing identifier and password.
  * @return {Promise<Object>} - The response data from the server.
  */
-export async function loginUser({identifier, password, role}) {
-    const response = await api.post("/api/auth/login",{identifier, password, role})
+export async function loginUser({ identifier, password, role }) {
+  const response = await api.post("/api/auth/login", {
+    identifier,
+    password,
+    role,
+  });
 
-    return response.data;
+  return response.data;
 }
 
 /**
@@ -32,9 +37,9 @@ export async function loginUser({identifier, password, role}) {
  * @return {Promise<Object>} - The response data from the server.
  */
 export async function logoutUser() {
-    const response = await api.post("/api/auth/logout")
+  const response = await api.post("/api/auth/logout");
 
-    return response.data;
+  return response.data;
 }
 
 /**
@@ -42,6 +47,16 @@ export async function logoutUser() {
  * @return {Promise<Object>} - The response data from the server.
  */
 export async function getUser() {
-    const response = await api.get("/api/auth/profile")
-    return response.data;
+  const response = await api.get("/api/auth/profile");
+  return response.data;
+}
+
+export async function updateProfile(data) {
+  const response = await api.patch("/api/auth/profile", data);
+  return response.data;
+}
+
+export async function changePassword(data) {
+  const response = await api.patch("/api/auth/password", data);
+  return response.data;
 }

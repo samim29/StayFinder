@@ -1,9 +1,5 @@
 import axios from "axios";
-
-const api = axios.create({
-  baseURL: "http://localhost:3000",
-  withCredentials: true,
-});
+import api from "../../../services/api.js";
 /**
  * Fetch a specific pg by its ID
  * @param {string} pgId - The ID of the pg to fetch
@@ -77,7 +73,8 @@ export async function getUploadSignature() {
  * @returns {Promise} - A promise resolving to the uploaded image data
  */
 export async function uploadPgImage(file) {
-  const { timestamp, folder, signature, apiKey, cloudName } = await getUploadSignature();
+  const { timestamp, folder, signature, apiKey, cloudName } =
+    await getUploadSignature();
   const formData = new FormData();
 
   formData.append("file", file);

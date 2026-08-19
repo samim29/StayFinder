@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import { useState } from "react";
 import AuthSide from "../components/AuthSide";
 import "../auth.scss";
 import { useNavigate, Link } from "react-router-dom";
@@ -9,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../validations/auth.validation";
 import { getErrorMessage } from "../utils/errorHandler";
 const Register = () => {
-  const { handleRegister, loading } = useAuth();
+  const { handleRegister } = useAuth();
   const navigate = useNavigate();
 
   const [serverError, setServerError] = useState("");
@@ -48,7 +47,7 @@ const Register = () => {
       console.error("Registration error:", error);
 
       setServerError(
-        getErrorMessage(error, "Registration failed. Please try again.")
+        getErrorMessage(error, "Registration failed. Please try again."),
       );
     }
   };
@@ -65,16 +64,10 @@ const Register = () => {
         <div className="auth-card">
           <h2>Create your account</h2>
 
-          <p>
-            Tell us who you are so we can get you to the right dashboard.
-          </p>
+          <p>Tell us who you are so we can get you to the right dashboard.</p>
 
           {/* Role Selection */}
-          <div
-            className="role-toggle"
-            role="tablist"
-            aria-label="Account type"
-          >
+          <div className="role-toggle" role="tablist" aria-label="Account type">
             <button
               type="button"
               className={role === "student" ? "active" : ""}
@@ -95,16 +88,11 @@ const Register = () => {
           </div>
 
           <p className="role-status">
-            Selected role:{" "}
-            {role === "student" ? "Student" : "PG Owner"}
+            Selected role: {role === "student" ? "Student" : "PG Owner"}
           </p>
 
           {/* Server Error */}
-          {serverError && (
-            <div className="form-error">
-              {serverError}
-            </div>
-          )}
+          {serverError && <div className="form-error">{serverError}</div>}
 
           <form
             className="auth-form"
@@ -123,9 +111,7 @@ const Register = () => {
               />
 
               {errors.name && (
-                <div className="field-error">
-                  {errors.name.message}
-                </div>
+                <div className="field-error">{errors.name.message}</div>
               )}
             </div>
 
@@ -141,9 +127,7 @@ const Register = () => {
               />
 
               {errors.email && (
-                <div className="field-error">
-                  {errors.email.message}
-                </div>
+                <div className="field-error">{errors.email.message}</div>
               )}
             </div>
 
@@ -159,9 +143,7 @@ const Register = () => {
               />
 
               {errors.phone && (
-                <div className="field-error">
-                  {errors.phone.message}
-                </div>
+                <div className="field-error">{errors.phone.message}</div>
               )}
             </div>
 
@@ -177,9 +159,7 @@ const Register = () => {
               />
 
               {errors.password && (
-                <div className="field-error">
-                  {errors.password.message}
-                </div>
+                <div className="field-error">{errors.password.message}</div>
               )}
             </div>
 
@@ -194,8 +174,7 @@ const Register = () => {
           </form>
 
           <p className="switch-line">
-            Already have an account?{" "}
-            <Link to="/login">Log in</Link>
+            Already have an account? <Link to="/login">Log in</Link>
           </p>
         </div>
       </section>
@@ -204,4 +183,3 @@ const Register = () => {
 };
 
 export default Register;
-

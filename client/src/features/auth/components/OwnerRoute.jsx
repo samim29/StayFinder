@@ -10,7 +10,8 @@ const OwnerRoute = () => {
 
   if (loading) return <main className="pg-page">Loading your account…</main>;
 
-  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (!user)
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   if (user.role !== "owner") return <Navigate to="/dashboard" replace />;
 
   return <Outlet />;

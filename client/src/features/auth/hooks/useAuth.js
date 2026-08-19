@@ -1,11 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../auth.context.jsx";
-import {
-  registerUser,
-  loginUser,
-  logoutUser,
-  getUser,
-} from "../services/auth.api.js";
+import { registerUser, loginUser, logoutUser } from "../services/auth.api.js";
 
 /**
  * @description Custom hook to access authentication context and perform authentication actions.
@@ -93,6 +88,7 @@ export const useAuth = () => {
 
   return {
     user,
+    setUser,
     loading,
     handleRegister,
     handleLogin,

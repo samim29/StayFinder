@@ -1,20 +1,28 @@
 const mongoose = require("mongoose");
 
-
-const tokenBlacklistSchema = new mongoose.Schema({
+const tokenBlacklistSchema = new mongoose.Schema(
+  {
     token: {
-        type: String,
-        required: [ true, "Token is required to blacklist" ],
-        unique: [ true, "Token is already blacklisted" ]
-    }
-}, {
-    timestamps: true
-})
+      type: String,
+      required: [true, "Token is required to blacklist"],
+      unique: [true, "Token is already blacklisted"],
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
-tokenBlacklistSchema.index({ createdAt: 1 }, {
-    expireAfterSeconds: 60 * 60 * 24 * 3 // 3 days
-})
+tokenBlacklistSchema.index(
+  { createdAt: 1 },
+  {
+    expireAfterSeconds: 60 * 60 * 24 * 3, // 3 days
+  },
+);
 
-const tokenBlackListModel = mongoose.model("TokenBlackList", tokenBlacklistSchema);
+const tokenBlackListModel = mongoose.model(
+  "TokenBlackList",
+  tokenBlacklistSchema,
+);
 
 module.exports = tokenBlackListModel;

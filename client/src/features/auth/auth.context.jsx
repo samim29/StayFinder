@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState } from "react";
 import { useEffect } from "react";
 import { getUser } from "./services/auth.api.js";
@@ -12,24 +13,24 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-    useEffect(() => {
-        const getAndSetUser = async () => {
-            try {
-                const data = await getUser();
 
-                if (data?.user) {
-                    setUser(data.user);
-                }
-            } catch (error) {
-                console.error("Failed to get current user:");
-            } finally {
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    const getAndSetUser = async () => {
+      try {
+        const data = await getUser();
 
-        getAndSetUser();
-    }, []);
+        if (data?.user) {
+          setUser(data.user);
+        }
+      } catch {
+        console.error("Failed to get current user:");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getAndSetUser();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, setUser, loading, setLoading }}>

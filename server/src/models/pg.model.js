@@ -77,10 +77,8 @@ const pgSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-
-
 pgSchema.index({ location: "2dsphere" });
-pgSchema.index({ rent: 1 , availableBeds: 1 });
+pgSchema.index({ rent: 1, availableBeds: 1 });
 
 const PgModel = mongoose.model("PG", pgSchema);
 

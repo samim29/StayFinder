@@ -1,9 +1,8 @@
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AuthSide from "../components/AuthSide";
 import "../auth.scss";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../validations/auth.validation";
@@ -12,6 +11,7 @@ import { getErrorMessage } from "../utils/errorHandler";
 const Login = () => {
   const { handleLogin, loading, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [serverError, setServerError] = useState("");
 
@@ -46,13 +46,13 @@ const Login = () => {
       const isLoggedIn = await handleLogin(data);
 
       if (isLoggedIn) {
-        navigate("/dashboard");
+        navigate(location.state?.from || "/dashboard", { replace: true });
       }
     } catch (error) {
       console.error("Login error:", error);
 
       setServerError(
-        getErrorMessage(error, "Login failed. Please check your credentials.")
+        getErrorMessage(error, "Login failed. Please check your credentials."),
       );
     }
   };
@@ -69,16 +69,10 @@ const Login = () => {
         <div className="auth-card">
           <h2>Login to your account</h2>
 
-          <p>
-            Enter your email or phone number to access your dashboard.
-          </p>
+          <p>Enter your email or phone number to access your dashboard.</p>
 
           {/* Role Selection */}
-          <div
-            className="role-toggle"
-            role="tablist"
-            aria-label="Account type"
-          >
+          <div className="role-toggle" role="tablist" aria-label="Account type">
             <button
               type="button"
               className={role === "student" ? "active" : ""}
@@ -99,16 +93,11 @@ const Login = () => {
           </div>
 
           <p className="role-status">
-            Selected role:{" "}
-            {role === "student" ? "Student" : "PG Owner"}
+            Selected role: {role === "student" ? "Student" : "PG Owner"}
           </p>
 
           {/* Server Error */}
-          {serverError && (
-            <div className="form-error">
-              {serverError}
-            </div>
-          )}
+          {serverError && <div className="form-error">{serverError}</div>}
 
           <form
             className="auth-form"
@@ -117,9 +106,7 @@ const Login = () => {
           >
             {/* Identifier */}
             <div className="field">
-              <label htmlFor="identifier">
-                EMAIL OR PHONE NUMBER
-              </label>
+              <label htmlFor="identifier">EMAIL OR PHONE NUMBER</label>
 
               <input
                 type="text"
@@ -129,9 +116,7 @@ const Login = () => {
               />
 
               {errors.identifier && (
-                <p className="field-error">
-                  {errors.identifier.message}
-                </p>
+                <p className="field-error">{errors.identifier.message}</p>
               )}
             </div>
 
@@ -147,9 +132,7 @@ const Login = () => {
               />
 
               {errors.password && (
-                <p className="field-error">
-                  {errors.password.message}
-                </p>
+                <p className="field-error">{errors.password.message}</p>
               )}
             </div>
 
@@ -164,8 +147,7 @@ const Login = () => {
           </form>
 
           <p className="switch-line">
-            Don't have an account?{" "}
-            <Link to="/register">Sign up</Link>
+            Don't have an account? <Link to="/register">Sign up</Link>
           </p>
         </div>
       </section>
@@ -174,4 +156,3 @@ const Login = () => {
 };
 
 export default Login;
-

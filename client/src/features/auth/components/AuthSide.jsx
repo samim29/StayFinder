@@ -1,5 +1,4 @@
-import React from 'react'
-import '../auth.scss'
+import "../auth.scss";
 const AuthSide = () => {
   return (
     <div className="auth-side">
@@ -10,14 +9,15 @@ const AuthSide = () => {
 
       <div className="auth-quote-block">
         <h1 className="auth-quote">
-          "Booked my PG two weeks before I even landed. Owner had my bed ready on day one."
+          "Booked my PG two weeks before I even landed. Owner had my bed ready
+          on day one."
         </h1>
         <p className="auth-quote-by">- PRIYA S., FIRST-YEAR, PUNE</p>
       </div>
 
       <div className="auth-footer mono">SF · TERMINAL 01 · WELCOME ABOARD</div>
     </div>
-  )
-}
+  );
+};
 
-export default AuthSide
+export default AuthSide;

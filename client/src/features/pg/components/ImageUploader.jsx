@@ -8,7 +8,9 @@ const ImageUploader = ({ images, onChange }) => {
   const [error, setError] = useState("");
 
   const addFiles = (files) => {
-    const validFiles = Array.from(files).filter((file) => file.type.startsWith("image/") && file.size <= MAX_FILE_SIZE);
+    const validFiles = Array.from(files).filter(
+      (file) => file.type.startsWith("image/") && file.size <= MAX_FILE_SIZE,
+    );
     const remainingSlots = MAX_IMAGES - images.length;
 
     if (validFiles.length !== files.length) {
@@ -57,16 +59,29 @@ const ImageUploader = ({ images, onChange }) => {
           addFiles(event.dataTransfer.files);
         }}
       >
-        Drag & drop images here, or click to upload — first image becomes the cover photo
+        Drag & drop images here, or click to upload — first image becomes the
+        cover photo
       </button>
       {error && <p className="field-error">{error}</p>}
       {images.length > 0 && (
         <div className="image-preview-grid">
           {images.map((image, index) => (
-            <div className="image-preview" key={image.publicId || image.preview}>
-              <img src={image.url || image.preview} alt={`Listing preview ${index + 1}`} />
+            <div
+              className="image-preview"
+              key={image.publicId || image.preview}
+            >
+              <img
+                src={image.url || image.preview}
+                alt={`Listing preview ${index + 1}`}
+              />
               {index === 0 && <span>Cover</span>}
-              <button type="button" aria-label={`Remove image ${index + 1}`} onClick={() => removeImage(index)}>×</button>
+              <button
+                type="button"
+                aria-label={`Remove image ${index + 1}`}
+                onClick={() => removeImage(index)}
+              >
+                ×
+              </button>
             </div>
           ))}
         </div>

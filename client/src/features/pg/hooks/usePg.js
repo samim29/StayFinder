@@ -1,6 +1,15 @@
 import { useContext } from "react";
 import { PgContext } from "../pg.context.jsx";
-import { createPg, deletePg, getMyPgs, getPg, getPgs, getPublicPg, updatePg, uploadPgImage } from "../services/pg.api.js";
+import {
+  createPg,
+  deletePg,
+  getMyPgs,
+  getPg,
+  getPgs,
+  getPublicPg,
+  updatePg,
+  uploadPgImage,
+} from "../services/pg.api.js";
 
 /**
  * @description Provides PG listing state and owner listing actions.
@@ -69,7 +78,9 @@ export const usePg = () => {
     setLoading(true);
     try {
       const data = await updatePg(pgId, pgData);
-      setPgs((currentPgs) => currentPgs.map((pg) => (pg._id === pgId ? data.pg : pg)));
+      setPgs((currentPgs) =>
+        currentPgs.map((pg) => (pg._id === pgId ? data.pg : pg)),
+      );
       return data;
     } finally {
       setLoading(false);
@@ -86,5 +97,16 @@ export const usePg = () => {
     }
   };
 
-  return { pgs, loading, handleGetPg, handleGetPublicPg, handleSearchPgs, handleGetMyPgs, handleCreatePg, handleUpdatePg, handleDeletePg, uploadPgImage };
+  return {
+    pgs,
+    loading,
+    handleGetPg,
+    handleGetPublicPg,
+    handleSearchPgs,
+    handleGetMyPgs,
+    handleCreatePg,
+    handleUpdatePg,
+    handleDeletePg,
+    uploadPgImage,
+  };
 };

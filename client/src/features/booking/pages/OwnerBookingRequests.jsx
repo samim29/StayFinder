@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useBooking } from "../hooks/useBooking";
 import "../booking.scss";
+import LoadingState from "../../../components/LoadingState";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
@@ -70,7 +71,7 @@ const OwnerBookingRequests = () => {
       </div>
       {loadError && <div className="page-error">{loadError}</div>}
       {loading ? (
-        <div className="dashboard-empty">Loading requests…</div>
+        <LoadingState label="Loading requests" />
       ) : pending.length === 0 && !loadError ? (
         <div className="dashboard-empty">No pending booking requests.</div>
       ) : (

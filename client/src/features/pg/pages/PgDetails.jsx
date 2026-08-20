@@ -5,6 +5,7 @@ import PgMap from "../components/PgMap";
 import { usePg } from "../hooks/usePg";
 import { getOptimizedImageUrl } from "../utils/image.utils";
 import "../discovery.scss";
+import LoadingState from "../../../components/LoadingState";
 
 const PgDetails = () => {
   const { pgId } = useParams();
@@ -43,7 +44,7 @@ const PgDetails = () => {
       <>
         <DiscoveryHeader />
         <main className="details-page">
-          <div className="empty-state">Loading listing…</div>
+          <LoadingState label="Loading listing" />
         </main>
       </>
     );

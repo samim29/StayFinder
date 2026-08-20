@@ -8,6 +8,8 @@ import { pgSchema } from "../validations/pg.validation";
 import { usePg } from "../hooks/usePg";
 import DiscoveryHeader from "../components/DiscoveryHeader";
 import "../pg.scss";
+import LoadingState from "../../../components/LoadingState";
+import LoadingButtonContent from "../../../components/LoadingButtonContent";
 
 const AMENITIES = ["WiFi", "Meals", "AC", "Laundry", "Power backup", "CCTV"];
 
@@ -102,7 +104,7 @@ const PgForm = () => {
     return (
       <>
         <main className="pg-page">
-          <p>Loading listing…</p>
+        <LoadingState label="Loading listing" />
         </main>
       </>
     );
@@ -255,11 +257,7 @@ const PgForm = () => {
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? "Uploading photos and saving…"
-                : isEditing
-                  ? "Save changes"
-                  : "Publish listing"}
+            <LoadingButtonContent loading={isSubmitting} loadingLabel="Uploading photos and saving…">{isEditing ? "Save changes" : "Publish listing"}</LoadingButtonContent>
             </button>
           </form>
         </section>

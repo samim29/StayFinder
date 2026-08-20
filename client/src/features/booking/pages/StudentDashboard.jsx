@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import DiscoveryHeader from "../../pg/components/DiscoveryHeader";
 import { useBooking } from "../hooks/useBooking";
 import "../booking.scss";
+import LoadingState from "../../../components/LoadingState";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-IN", {
@@ -69,7 +70,7 @@ const StudentDashboard = () => {
           {notice && <div className="booking-notice">{notice}</div>}
           {loadError && <div className="page-error">{loadError}</div>}
           {loading ? (
-            <div className="dashboard-empty">Loading bookings…</div>
+            <LoadingState label="Loading bookings" />
           ) : bookings.length === 0 && !loadError ? (
             <div className="dashboard-empty">
               You have no bookings yet.

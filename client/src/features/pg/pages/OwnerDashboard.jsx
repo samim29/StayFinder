@@ -4,6 +4,7 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import { usePg } from "../hooks/usePg";
 import { getOptimizedImageUrl } from "../utils/image.utils";
 import "../pg.scss";
+import LoadingState from "../../../components/LoadingState";
 
 const OwnerDashboard = () => {
   const { user } = useAuth();
@@ -55,7 +56,7 @@ const OwnerDashboard = () => {
       {deleteError && <div className="form-error">{deleteError}</div>}
       {loadError && <div className="form-error">{loadError}</div>}
       {loading ? (
-        <div className="dashboard-empty">Loading listings…</div>
+        <LoadingState label="Loading listings" />
       ) : pgs.length === 0 && !loadError ? (
         <div className="dashboard-empty">
           <p>You have not published a listing yet.</p>

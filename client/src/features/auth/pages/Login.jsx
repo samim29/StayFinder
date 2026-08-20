@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AuthSide from "../components/AuthSide";
 import "../auth.scss";
+import LoadingButtonContent from "../../../components/LoadingButtonContent";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -142,7 +143,7 @@ const Login = () => {
               className="submit-btn"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Logging in..." : "Log in"}
+              <LoadingButtonContent loading={isSubmitting} loadingLabel="Logging in…">Log in</LoadingButtonContent>
             </button>
           </form>
 

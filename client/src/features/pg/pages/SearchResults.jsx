@@ -6,6 +6,7 @@ import PgFilters from "../components/PgFilters";
 import PgMap from "../components/PgMap";
 import { usePg } from "../hooks/usePg";
 import "../discovery.scss";
+import LoadingState from "../../../components/LoadingState";
 
 const initialFilters = {
   minRent: "",
@@ -134,7 +135,7 @@ const SearchResults = () => {
           </div>
           {searchError && <div className="page-error">{searchError}</div>}
           {loading ? (
-            <div className="page-state">Finding suitable PGs…</div>
+            <LoadingState label="Finding suitable PGs" />
           ) : pgs.length ? (
             <>
               {pgs.map((pg) => (

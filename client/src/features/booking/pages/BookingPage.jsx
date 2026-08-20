@@ -10,6 +10,8 @@ import { usePg } from "../../pg/hooks/usePg";
 import { getOptimizedImageUrl } from "../../pg/utils/image.utils";
 import { useBooking } from "../hooks/useBooking";
 import "../booking.scss";
+import LoadingState from "../../../components/LoadingState";
+import LoadingButtonContent from "../../../components/LoadingButtonContent";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -71,9 +73,7 @@ const BookingPage = () => {
     return (
       <>
         <DiscoveryHeader />
-        <main className="booking-page">
-          <div className="empty-state">Loading booking details…</div>
-        </main>
+        <main className="booking-page"><LoadingState label="Loading booking details" /></main>
       </>
     );
 
@@ -177,7 +177,7 @@ const BookingPage = () => {
               owner has 48 hours to confirm — you’ll be notified either way.
             </div>
             <button className="booking-submit" type="submit" disabled={loading}>
-              {loading ? "Sending request…" : "Send Booking Request"}
+              <LoadingButtonContent loading={loading} loadingLabel="Sending request…">Send Booking Request</LoadingButtonContent>
             </button>
           </form>
         </section>

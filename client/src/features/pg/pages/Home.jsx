@@ -4,6 +4,7 @@ import DiscoveryHeader from "../components/DiscoveryHeader";
 import PgCard from "../components/PgCard";
 import { usePg } from "../hooks/usePg";
 import "../discovery.scss";
+import LoadingState from "../../../components/LoadingState";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const Home = () => {
           <p className="kicker">Nearby your campus</p>
           {homeError && <div className="page-error">{homeError}</div>}
           {loading ? (
-            <div className="page-state">Loading nearby listings…</div>
+            <LoadingState label="Loading nearby listings" />
           ) : pgs.length ? (
             <div className="nearby-grid">
               {pgs.map((pg) => (

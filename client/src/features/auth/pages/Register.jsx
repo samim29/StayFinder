@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AuthSide from "../components/AuthSide";
 import "../auth.scss";
+import LoadingButtonContent from "../../../components/LoadingButtonContent";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useForm } from "react-hook-form";
@@ -169,7 +170,7 @@ const Register = () => {
               className="submit-btn"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Creating account..." : "Create account"}
+              <LoadingButtonContent loading={isSubmitting} loadingLabel="Creating account…">Create account</LoadingButtonContent>
             </button>
           </form>
 

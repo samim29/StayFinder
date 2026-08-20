@@ -1,12 +1,23 @@
-const mongoosh = require("mongoose");
+const mongoose = require("mongoose");
+
+let connectionPromise;
 
 const connectDb = async () => {
+  if (!process.env.MONGODB_URI) throw new Error("MONGODB_URI is not configured");
+  if (mongoose.connection.readyState === 1) return mongoose.connection;
+  if (connectionPromise) return connectionPromise;
   try {
-    await mongoosh.connect(process.env.MONGODB_URI);
-    console.log("databse connected");
+    connectionPromise = mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+      maxPoolSize: 10,
+    });
+    await connectionPromise;
+    console.log("database connected");
+    return mongoose.connection;
   } catch (error) {
-    console.log(error);
-    process.exit(1);
+    connectionPromise = undefined;
+    console.error("database connection failed:", error.message);
+    throw error;
   }
 };
 
